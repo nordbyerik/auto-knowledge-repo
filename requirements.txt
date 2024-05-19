@@ -1,0 +1,13 @@
+docarray
+chromadb
+streamlit
+transformers
+langchain-huggingface
+langchain
+umap-learn
+scikit-learn
+tiktoken
+langchain-community
+langchainhub
+langchain-anthropic
+cohere
