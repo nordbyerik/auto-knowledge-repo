@@ -1,5 +1,3 @@
-%%writefile app.py
-
 from langchain_community.document_loaders import TextLoader
 from langchain.prompts import PromptTemplate
 from langchain.agents import create_react_agent, AgentExecutor
@@ -107,10 +105,25 @@ class KnowledgeRepoBot:
             condense_question_prompt=prompt,
             memory=self.memory,
         )
-        result = qa({"question": question})
+        #result = qa({"question": question})
+        prompt = hub.pull("rlm/rag-prompt")
 
-        #response = rag_chain.invoke({"question": question})
-        return result["result"]
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
+
+
+        rag_chain = (
+            {"context": self.retriever | format_docs, "question": RunnablePassthrough()}
+            | prompt
+            | self.model
+            | StrOutputParser()
+        )
+        result = rag_chain.invoke("What is Task Decomposition?")
+        #response = rag_chain.invoke({"question": question}
+
+        result = result.split("Answer:")[1]
+        return result
+        
     def clean_knowledge(self, new_knowledge):
           template = """
               You are the maintainer of an open source knowledge repository which uses markdown.
